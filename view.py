@@ -33,7 +33,8 @@ class Window(QtWidgets.QWidget):
     uic.loadUi("view.ui", self)
 
 
-    
+    self.fromInput.setValidator(QRegExpValidator(QRegExp("^[A-Z,a-z]{1,3}$")))
+    self.toInput.setValidator(QRegExpValidator(QRegExp("^([A-Z,a-z]{1,3})(,([A-Z,a-z]{1,3})){0,1000}$")))
 
 
     def go():
