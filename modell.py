@@ -4,7 +4,12 @@ import copy
 
 def getAPIRate(fromCurrency, toCurrency):
   url = "https://api.exchangeratesapi.io/latest?base=" + fromCurrency + "&symbols=" + ",".join(toCurrency)
-  return requests.get(url).json()
+  res = requests.get(url).json()
+  if "error" in res:
+    raise Exception(res["error"])
+  else:
+    return res
+
 
 
 
@@ -13,38 +18,52 @@ if not offline["base"] in offline["rates"]:
   offline["rates"][offline["base"]] = 1.0
   
 def getOfflineRate(fromCurrency, toCurrency):
-  res = copy.deepcopy(offline)
+  try:
+    res = copy.deepcopy(offline)
   
-  res["base"] = fromCurrency
-  rates = res["rates"]
-  fromValue = rates[fromCurrency]
-  for key in toCurrency:
-    rates[key] = rates[key] / fromValue
+    res["base"] = fromCurrency
+    rates = res["rates"]
+    fromValue = rates[fromCurrency]
+    for key in toCurrency:
+      rates[key] = rates[key] / fromValue
 
-  return res
-
-def swapCurrency(value, fromCurrency, toCurrency, live = True):
-  if not isinstance(toCurrency, list):
-    toCurrency = [toCurrency]
+    return res
+  except Exception as e:
+    raise Exception("Unable to find currency")
 
 
-  if live:
-    res = getAPIRate(fromCurrency, toCurrency)
-  else:
-    res = getOfflineRate(fromCurrency, toCurrency)
+
+
+rateCalculators = {
+  "api": getAPIRate,
+  "offline": getAPIRate
+}
+
+
+
+
+def swapCurrency(value, fromCurrency, toCurrency, via):
+  try:
+    calculator = rateCalculators[via]
+  except Exception as e:
+    raise Exception("Cannot find source for " + via)
   
-  if "error" in res:
-    raise Exception("Unknown Error")
+  res = calculator(fromCurrency, toCurrency)
 
-  rates = res["rates"]
-  values = {}
-  for key in toCurrency:
-    values[key] = rates[key] * value
+  try:
+    rates = res["rates"]
+    values = {}
+    for key in toCurrency:
+      values[key] = rates[key] * value
 
-  return {
-    "rates": res["rates"],
-    "values": values,
-    "date": res["date"],
-    "baseCurrency": fromCurrency,
-    "baseValue": value
-  }
+    return {
+      "rates": res["rates"],
+      "values": values,
+      "date": res["date"],
+      "baseCurrency": fromCurrency,
+      "baseValue": value
+    }
+  except Exception as e:
+    raise Exception("Unknown error")
+
+  
