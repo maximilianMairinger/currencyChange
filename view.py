@@ -17,7 +17,7 @@ def parseResultToHTML(res):
     value = values[currency]
     rate = rates[currency]
 
-    html += "<li><b>" + str(value) + " " + str(currency) +  "</b> (Kurs: " + str(rate) + ")</li>"
+    html += "<li><b>" + str(round(value, 2)) + " " + currency +  "</b> (Kurs: " + str(round(rate, 2)) + ")</li>"
 
   html += "</ul>"
   html += "Stand: " + res["date"]
@@ -37,16 +37,46 @@ class Window(QtWidgets.QWidget):
     self.toInput.setValidator(QRegExpValidator(QRegExp("^([A-Z,a-z]{1,3})(,([A-Z,a-z]{1,3})){0,1000}$")))
 
 
+
+
     def go():
+
       value = float(self.betragInput.text())
       fromCurrency = self.fromInput.text()
       toCurrency = self.toInput.text()
       live = self.liveCheckbox.isChecked()
+      print("live", live)
+      self.statusLabel.setText("Abfragen...")
+
+      self.clearHTML()
       
-      controller.calculateValueInNewCurrency(value, fromCurrency, toCurrency, live)
+      ret = controller.calculateValueInNewCurrency(value, fromCurrency, toCurrency, live)
+      if ret["ok"]:
+        self.showResult(ret["res"])
+        self.statusLabel.setText("Erflogreich")
+      else: 
+        try:
+          if len(ret["msg"]) == 1:
+            s = str(ret["msg"][0])
+          else:
+            s = str(ret["msg"])
+        except Exception as e:
+          str(ret["msg"])
+          
+        self.statusLabel.setText(s)
       
 
     self.goButton.clicked.connect(go)
+
+  def clearHTML(self):
+    self.browser.setHtml("")
+
+
+  def clearInputs(self):
+    value = float(self.betragInput.text())
+    fromCurrency = self.fromInput.text()
+    toCurrency = self.toInput.text()
+    live = self.liveCheckbox.isChecked()
 
   def showResult(self, res):
     self.browser.setHtml(parseResultToHTML(res))
