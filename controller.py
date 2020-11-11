@@ -6,9 +6,9 @@ from modell import *
 
 
 def calculateValueInNewCurrency(value, fromCurrency, toCurrency, live):
-  if isinstance(str, live):
+  if isinstance(live, str):
     via = live
-  elif isinstance(bool, live):
+  elif isinstance(live, bool):
     if live:
       via = "api"
     else: 
@@ -16,9 +16,8 @@ def calculateValueInNewCurrency(value, fromCurrency, toCurrency, live):
   else:
     via = "api"
 
-
   if isinstance(toCurrency, str):
-    toCurrency = ",".split(toCurrency)
+    toCurrency = toCurrency.split(",")
   else:
     if not isinstance(toCurrency, list):
       toCurrency = [str(toCurrency)]
@@ -26,17 +25,23 @@ def calculateValueInNewCurrency(value, fromCurrency, toCurrency, live):
       for i in range(len(toCurrency)):
         toCurrency[i] = str(toCurrency[i])
 
-  
+
   for i in range(len(toCurrency)):
-    toCurrency[i] = upper(toCurrency[i])
+    toCurrency[i] = toCurrency[i].upper()
+
+
+  fromCurrency = fromCurrency.upper()
+
 
   try:
     res = swapCurrency(value, fromCurrency, toCurrency, via)  
+
     return {
       "ok": True,
       "res": res
     }
   except Exception as e:
+    print(e)
     return {
       "ok": False,
       "msg": e.args

@@ -3,11 +3,20 @@ import copy
 
 
 def getAPIRate(fromCurrency, toCurrency):
+  print("online")
+  fix = False
+  if fromCurrency in toCurrency:
+    fix = True
+    toCurrency.remove(fromCurrency)
+  
   url = "https://api.exchangeratesapi.io/latest?base=" + fromCurrency + "&symbols=" + ",".join(toCurrency)
   res = requests.get(url).json()
   if "error" in res:
     raise Exception(res["error"])
   else:
+    if fix:
+      toCurrency.append(fromCurrency)
+      res["rates"][fromCurrency] = 1.0
     return res
 
 
@@ -18,6 +27,7 @@ if not offline["base"] in offline["rates"]:
   offline["rates"][offline["base"]] = 1.0
   
 def getOfflineRate(fromCurrency, toCurrency):
+  print("offline")
   try:
     res = copy.deepcopy(offline)
   
@@ -26,9 +36,10 @@ def getOfflineRate(fromCurrency, toCurrency):
     fromValue = rates[fromCurrency]
     for key in toCurrency:
       rates[key] = rates[key] / fromValue
-
+      
     return res
   except Exception as e:
+    print(e)
     raise Exception("Unable to find currency")
 
 
@@ -36,20 +47,22 @@ def getOfflineRate(fromCurrency, toCurrency):
 
 rateCalculators = {
   "api": getAPIRate,
-  "offline": getAPIRate
+  "offline": getOfflineRate
 }
 
 
 
 
 def swapCurrency(value, fromCurrency, toCurrency, via):
+  print("via", via)
   try:
     calculator = rateCalculators[via]
   except Exception as e:
     raise Exception("Cannot find source for " + via)
   
+  print("4")
   res = calculator(fromCurrency, toCurrency)
-
+  print("5")
   try:
     rates = res["rates"]
     values = {}
