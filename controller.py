@@ -4,6 +4,12 @@ from view import *
 from modell import *
 
 
+rateStrategieDictionary: dict[str, GetRateStrategy] = {
+  "api": GetRateWithApi(),
+  "offline": GetRateOffline()
+}
+
+
 class Controller:
   def __init__(self):
     """
@@ -76,6 +82,9 @@ class Controller:
     else:
       via = "api"
 
+    # Get strategy
+    strategy = rateStrategieDictionary[via]
+
     # Parse toCurrency
     # Can be a string split with "," or a list or strings
     if isinstance(toCurrency, str):
@@ -98,7 +107,7 @@ class Controller:
 
     # Call swapcurrency and parse result
     try:
-      res = swapCurrency(value, fromCurrency, toCurrency, via)  
+      res = swapCurrency(value, fromCurrency, toCurrency, strategy)  
 
       # All went well
       return {
