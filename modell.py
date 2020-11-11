@@ -3,6 +3,14 @@ import copy
 
 
 def getAPIRate(fromCurrency, toCurrency):
+  """
+  Get rate from currency to currency from live api
+
+  :fromCurrency: the currency the rate is ralative to
+  :toCurrency: the currencies (as list) you are intrested in
+  :return: Result in form {rates: {[key in string]: float}, base: string, date: string}
+  :raise: When something went wrong a generic Exception gets raised, with the explaination as args
+  """
   print("online")
   fix = False
   if fromCurrency in toCurrency:
@@ -27,6 +35,14 @@ if not offline["base"] in offline["rates"]:
   offline["rates"][offline["base"]] = 1.0
   
 def getOfflineRate(fromCurrency, toCurrency):
+  """
+  Get rate from currency to currency from live api
+
+  :fromCurrency: the currency the rate is ralative to
+  :toCurrency: the currencies (as list) you are intrested in
+  :return: Result in form {rates: {[key in string]: float}, base: string, date: string}
+  :raise: When something went wrong a generic Exception gets raised, with the explaination as args
+  """
   print("offline")
   try:
     res = copy.deepcopy(offline)
@@ -44,7 +60,15 @@ def getOfflineRate(fromCurrency, toCurrency):
 
 
 
-
+# Functions here must be of type (fromCurrency: string, toCurrency: string[]): {
+#   rates: {[key in string]: float},
+#   base: string,
+#   date: string
+# }
+# 
+# When something went wrong they should raise an exception with the explaination as args
+#
+# They will be called depending on the usercase preference at swapCurrency (via)
 rateCalculators = {
   "api": getAPIRate,
   "offline": getOfflineRate
@@ -54,19 +78,36 @@ rateCalculators = {
 
 
 def swapCurrency(value, fromCurrency, toCurrency, via):
+  """
+  Calculate the value of a quantety of a currency in other currencies
+  Currency should be given in 3 letter form (e.g: EUR, USD)
+
+  :value: How much of this currency should be calculated
+  :fromCurrency: What is the currency you want to calculate from. Currency should be given in 3 letter form (e.g: EUR, USD)
+  :toCurrency: What is the currency you want to calculate to. This can be a comma seperated string or a list. Currency should be given in 3 letter form (e.g: EUR, USD)
+  :via: What calculator should be used to calculate the rate
+  :return: Result in form {rates: {[key in string]: float}, values: {[key in string]: float}, base: string, date: string, baseValue: string} where values are the cumputed ammount in the new currencies
+  :raise: When something went wrong a generic Exception gets raised, with the explaination as args
+  """
   print("via", via)
+
   try:
+    # Try to find calculator with given via
     calculator = rateCalculators[via]
   except Exception as e:
+    # When calculator cannot be found
     raise Exception("Cannot find source for " + via)
   
+  # Try to execute calculator
   res = calculator(fromCurrency, toCurrency)
   try:
     rates = res["rates"]
     values = {}
+    # Calculate new value with given rate
     for key in toCurrency:
       values[key] = rates[key] * value
 
+    # return formatted data
     return {
       "rates": res["rates"],
       "values": values,
@@ -75,6 +116,7 @@ def swapCurrency(value, fromCurrency, toCurrency, via):
       "baseValue": value
     }
   except Exception as e:
+    # When something unknown went wrong
     raise Exception("Unknown error")
 
   

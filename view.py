@@ -27,8 +27,13 @@ def parseResultToHTML(res):
 
 
 class Window(QtWidgets.QWidget):
-
+  """
+  The main window of the application
+  """
   def __init__(self):
+    """
+    Constructs the main window of this application. Attach all needed event liusteners
+    """
     super().__init__()
     uic.loadUi("view.ui", self)
 
@@ -39,12 +44,18 @@ class Window(QtWidgets.QWidget):
 
 
     def reset():
+      """
+      Reset all inputs and the HTML field
+      """
       self.clearHTML()
       self.clearInputs()
 
     self.resetButton.clicked.connect(reset)
 
     def go():
+      """
+      Ask for calculation
+      """
       value = float(self.betragInput.text())
       fromCurrency = self.fromInput.text()
       toCurrency = self.toInput.text()
@@ -72,10 +83,16 @@ class Window(QtWidgets.QWidget):
     self.goButton.clicked.connect(go)
 
   def clearHTML(self):
+    """
+    Clear HTML field
+    """
     self.browser.setHtml("")
 
 
   def clearInputs(self):
+    """
+    Clear all inputs
+    """
     self.betragInput.setValue(0)
     self.fromInput.setText("")
     self.toInput.setText("")
@@ -83,5 +100,8 @@ class Window(QtWidgets.QWidget):
     self.statusLabel.setText("Reset")
 
   def showResult(self, res):
+    """
+    Show the result as html in the middle field
+    """
     self.browser.setHtml(parseResultToHTML(res))
 
