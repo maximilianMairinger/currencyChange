@@ -1,1 +1,1 @@
-print("test")
+from controller import controller
