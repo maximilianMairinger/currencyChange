@@ -1,3 +1,5 @@
+from PyQt5 import QtWidgets, uic
+import sys
 from view import *
 from modell import *
 
