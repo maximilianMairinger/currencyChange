@@ -30,11 +30,12 @@ class Window(QtWidgets.QWidget):
   """
   The main window of the application
   """
-  def __init__(self):
+  def __init__(self, controller):
     """
     Constructs the main window of this application. Attach all needed event liusteners
     """
     super().__init__()
+    self.controller = controller
     uic.loadUi("view.ui", self)
 
 
@@ -52,35 +53,23 @@ class Window(QtWidgets.QWidget):
 
     self.resetButton.clicked.connect(reset)
 
-    def go():
+    def askForCurrencyChange():
       """
       Ask for calculation
       """
+
       value = float(self.betragInput.text())
       fromCurrency = self.fromInput.text()
       toCurrency = self.toInput.text()
       live = self.liveCheckbox.isChecked()
-      self.statusLabel.setText("Abfragen...")
 
-      self.clearHTML()
-      
-      ret = controller.calculateValueInNewCurrency(value, fromCurrency, toCurrency, live)
-      if ret["ok"]:
-        self.showResult(ret["res"])
-        self.statusLabel.setText("Erflogreich")
-      else: 
-        try:
-          if len(ret["msg"]) == 1:
-            s = str(ret["msg"][0])
-          else:
-            s = str(ret["msg"])
-        except Exception as e:
-          str(ret["msg"])
-          
-        self.statusLabel.setText(s)
+      self.controller.askForCurrencyChange(value, fromCurrency, toCurrency, live)
       
 
-    self.goButton.clicked.connect(go)
+    self.goButton.clicked.connect(askForCurrencyChange)
+
+  def setStatus(self, status):
+    self.statusLabel.setText(status)
 
   def clearHTML(self):
     """
@@ -104,4 +93,5 @@ class Window(QtWidgets.QWidget):
     Show the result as html in the middle field
     """
     self.browser.setHtml(parseResultToHTML(res))
+
 
