@@ -49,7 +49,6 @@ class Window(QtWidgets.QWidget):
       fromCurrency = self.fromInput.text()
       toCurrency = self.toInput.text()
       live = self.liveCheckbox.isChecked()
-      print("live", live)
       self.statusLabel.setText("Abfragen...")
 
       self.clearHTML()

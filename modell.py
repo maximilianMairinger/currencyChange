@@ -36,7 +36,7 @@ def getOfflineRate(fromCurrency, toCurrency):
     fromValue = rates[fromCurrency]
     for key in toCurrency:
       rates[key] = rates[key] / fromValue
-      
+
     return res
   except Exception as e:
     print(e)
@@ -60,9 +60,7 @@ def swapCurrency(value, fromCurrency, toCurrency, via):
   except Exception as e:
     raise Exception("Cannot find source for " + via)
   
-  print("4")
   res = calculator(fromCurrency, toCurrency)
-  print("5")
   try:
     rates = res["rates"]
     values = {}
