@@ -30,7 +30,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="betragInput"/>
+      <widget class="QSpinBox" name="betragInput">
+       <property name="maximum">
+        <number>999999999</number>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_2">
@@ -40,7 +44,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="fromInput"/>
+      <widget class="QLineEdit" name="fromInput">
+       <property name="maxLength">
+        <number>10000</number>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_3">
