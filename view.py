@@ -81,6 +81,7 @@ class Window(QtWidgets.QWidget):
     self.fromInput.setText("")
     self.toInput.setText("")
     self.liveCheckbox.setChecked(False)
+    self.statusLabel.setText("Reset")
 
   def showResult(self, res):
     self.browser.setHtml(parseResultToHTML(res))
