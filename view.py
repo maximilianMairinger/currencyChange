@@ -38,9 +38,13 @@ class Window(QtWidgets.QWidget):
 
 
 
+    def reset():
+      self.clearHTML()
+      self.clearInputs()
+
+    self.resetButton.clicked.connect(reset)
 
     def go():
-
       value = float(self.betragInput.text())
       fromCurrency = self.fromInput.text()
       toCurrency = self.toInput.text()
@@ -73,10 +77,10 @@ class Window(QtWidgets.QWidget):
 
 
   def clearInputs(self):
-    value = float(self.betragInput.text())
-    fromCurrency = self.fromInput.text()
-    toCurrency = self.toInput.text()
-    live = self.liveCheckbox.isChecked()
+    self.betragInput.setValue(0)
+    self.fromInput.setText("")
+    self.toInput.setText("")
+    self.liveCheckbox.setChecked(False)
 
   def showResult(self, res):
     self.browser.setHtml(parseResultToHTML(res))
