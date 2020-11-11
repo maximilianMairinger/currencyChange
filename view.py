@@ -1,4 +1,9 @@
 from PyQt5 import QtWidgets, uic
+from PyQt5.QtCore import Qt, QRegExp
+from PyQt5.QtGui import QRegExpValidator
+import controller
+
+
 
 
 def parseResultToHTML(res):
@@ -27,5 +32,21 @@ class Window(QtWidgets.QWidget):
     super().__init__()
     uic.loadUi("view.ui", self)
 
+
+    
+
+
+    def go():
+      value = float(self.betragInput.text())
+      fromCurrency = self.fromInput.text()
+      toCurrency = self.toInput.text()
+      live = self.liveCheckbox.isChecked()
+      
+      controller.calculateValueInNewCurrency(value, fromCurrency, toCurrency, live)
+      
+
+    self.goButton.clicked.connect(go)
+
   def showResult(self, res):
     self.browser.setHtml(parseResultToHTML(res))
+
