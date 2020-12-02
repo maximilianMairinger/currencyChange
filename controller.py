@@ -35,11 +35,14 @@ class Controller:
     """
     Ask for calculation
     """
+    # Set status to abfragen... and clear output
     self.view.setStatus("Abfragen...")
     self.view.clearHTML()
     
+    # Request
     ret = self.calculateValueInNewCurrency(value, fromCurrency, toCurrency, live)
 
+    # If request went ok, set status to erfolgreich, otherwise print error
     if ret["ok"]:
       self.view.showResult(ret["res"])
       self.view.setStatus("Erflogreich")
