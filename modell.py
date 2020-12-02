@@ -27,14 +27,16 @@ class GetRateWithApi(GetRateStrategy):
     :raise: When something went wrong a generic Exception gets raised, with the explaination as args
     """
     print("online")
+    # Fix is true if fromCurrency is inside toCurrency, which means it will be added later with a rate of 1
     fix = False
     if fromCurrency in toCurrency:
       fix = True
       toCurrency.remove(fromCurrency)
-    
+    # Url to request from server. Example: "https://api.exchangeratesapi.io/latest?base=EUR&symbols=USD"
     url = "https://api.exchangeratesapi.io/latest?base=" + fromCurrency + "&symbols=" + ",".join(toCurrency)
     res = requests.get(url).json()
     if "error" in res:
+      # Raises an exception if an error occurred during the api request
       raise Exception(res["error"])
     else:
       if fix:
@@ -57,11 +59,13 @@ class GetRateOffline(GetRateStrategy):
     """
     print("offline")
     try:
+      # Get the offline Data and copy it
       res = copy.deepcopy(GetRateOffline.offline)
     
       res["base"] = fromCurrency
       rates = res["rates"]
       fromValue = rates[fromCurrency]
+      # Calculate the rate from the offline data
       for key in toCurrency:
         rates[key] = rates[key] / fromValue
 
